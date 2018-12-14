@@ -16,6 +16,10 @@ register()
 	fi	
 	mkdir "$usr" 
 	cd "$usr"
+	while true
+	do		
+		usrCommands "$usr" "$pass"
+	done
 }
 
 #######################################################################
@@ -51,7 +55,7 @@ usrCommands()
 	> 5. list --> similar to ls
 	> 6. math [OPERATOR] [OPERAND1] [OPERAND2] --> obvious isn't it?1
  	> 7. retrieve [WORD] --> find all files conraining the given word 
- 	> 8. exit --> again! obvious!"
+ 	> 8. end --> again! obvious!"
 	
 	read cmd
 	cmd1=$(echo ${cmd} | cut -d" " -f1)
@@ -118,10 +122,10 @@ math() {
 		answer=$(expr "$operand1" - "$operand2")
 		;;
 	* )
-		answer=$(expr "$operand1" * "$operand2")
+		answer=$(expr "$operand1" \* "$operand2")
 		;;
 	/ )
-		answer=$(perl -e "print $operand1/$operand2")
+		answer=$(expr "$operand1 \\ $operand2")
 		;;
 	esac
 	echo $answer
@@ -189,8 +193,13 @@ openFile()
 	if [ $(ls | grep "$1") = "$1" ]
 	then
 		#openFile
-		echo "Contents of your file:"		
-		cat $1
+		if [ $(file "$1" | grep "archive") == *"archive"* ]
+		then
+			unzip -l "$1"
+		else
+			echo "Contents of your file:"		
+			cat $1
+		fi
 	else
 		echo "file does not exist!"
 	fi	
